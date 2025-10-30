@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Menu - Restro</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" id="logo">
+        <img src="Images/brand/Restro-2.png" alt="Restro Logo">
+      </a>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-home-btn">Home</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="about.html">About</a>
+        <a href="team.html">Team</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <nav class="nav-cta">
+        <a href="reservation.html" class="btn-primary">Book a Reservation</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1>Welcome To Our Menu</h1>
+      <p class="lead">Fresh ingredients, classic flavors. Every dish is prepared with care, just for you.</p>
+
+      <div class="menu-grid" style="margin-top: 24px;">
+        <!-- Appetizers Category -->
+        <div class="menu-category">
+          <h2>Appetizers</h2>
+          <ul>
+            <li>
+              <div class="menu-item">
+                <div class="name">Firewall Fries</div>
+                <div class="desc">Crispy fries tossed in a spicy seasoning.</div>
+              </div>
+              <div class="price">£4.50</div>
+            </li>
+            <li>
+              <div class="menu-item">
+                <div class="name">Onion Rings</div>
+                <div class="desc">Classic beer-battered onion rings with a side of aioli.</div>
+              </div>
+              <div class="price">£5.00</div>
+            </li>
+            <li>
+              <div class="menu-item">
+                <div class="name">Mozzarella Sticks</div>
+                <div class="desc">Golden-fried mozzarella with a marinara dipping sauce.</div>
+              </div>
+              <div class="price">£6.00</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Burgers Category -->
+        <div class="menu-category">
+          <h2>Burgers</h2>
+          <ul>
+            <li>
+              <div class="menu-item">
+                <div class="name">The Classic Diner Burger</div>
+                <div class="desc">6oz beef patty, lettuce, tomato, onion, and our special sauce.</div>
+              </div>
+              <div class="price">£12.00</div>
+            </li>
+            <li>
+              <div class="menu-item">
+                <div class="name">Mega Burger</div>
+                <div class="desc">Two 6oz beef patties, double cheese, bacon, onion rings, and BBQ sauce.</div>
+              </div>
+              <div class="price">£16.00</div>
+            </li>
+            <li>
+              <div class="menu-item">
+                <div class="name">Veggie Burger</div>
+                <div class="desc">A plant-based patty with avocado, lettuce, and tomato.</div>
+              </div>
+              <div class="price">£11.50</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Main Courses Category -->
+        <div class="menu-category">
+          <h2>Main Courses</h2>
+          <ul>
+            <li>
+              <div class="menu-item">
+                <div class="name">Firewall Fish & Chips</div>
+                <div class="desc">Beer-battered cod served with thick-cut chips and mushy peas.</div>
+              </div>
+              <div class="price">£14.00</div>
+            </li>
+            <li>
+              <div class="menu-item">
+                <div class="name">Roast Dinner Sunday</div>
+                <div class="desc">Slow-roasted beef or pork with roasted potatoes and vegetables.</div>
+              </div>
+              <div class="price">£17.00</div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Desserts Category -->
+        <div class="menu-category">
+          <h2>Desserts</h2>
+          <ul>
+            <li>
+              <div class="menu-item">
+                <div class="name">Apple Pie</div>
+                <div class="desc">Served warm with a scoop of vanilla ice cream.</div>
+              </div>
+              <div class="price">£6.50</div>
+            </li>
+            <li>
+              <div class="menu-item">
+                <div class="name">Chocolate Lava Cake</div>
+                <div class="desc">A rich chocolate cake with a molten center.</div>
+              </div>
+              <div class="price">£7.00</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2025 Restro - All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- AI Chat Widget (Classic) -->
+  <div id="chat-widget" class="chat-widget">
+    <div class="chat-header">
+      <h4>AI Assistant</h4>
+      <button id="chat-toggle" class="chat-toggle">×</button>
+    </div>
+    <div id="chat-messages" class="chat-messages">
+      <div class="message bot">Hello! I'm your AI assistant. How can I help you today?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chat-input" placeholder="Type your message..." />
+      <button id="chat-send">Send</button>
+    </div>
+  </div>
+
+  <script src="scripts/main.js"></script>
+  <script src="scripts/chat.js"></script>
+
+</body>
+
+</html>

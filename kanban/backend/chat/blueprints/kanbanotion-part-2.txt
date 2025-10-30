@@ -1,0 +1,268 @@
+# The Complete Koby Blueprint Library
+
+**Purpose:** This is the complete, unabridged compilation of all our architectural blueprints. It contains the full text of every workflow and guide we have created for building web applications.
+
+---
+---
+
+//============= ::: 01 - Planning Phase (The Architect's Guide) ::: =============\\
+
+# Blueprint: Standard Feature Template
+
+**Purpose:** To define the universal structure for any modular feature we add to our library. This ensures consistency and makes our feature templates easy to understand and implement.
+
+### **1. Metadata**
+
+*   **Template Name:** A clear, human-readable name for the feature.
+    *   *Example: "Feature: Lead Capture & Booking Form"*
+*   **Description:** A one-sentence summary of what this feature does.
+    *   *Example: "Adds a complete system for capturing user inquiries via a form and processing them on the backend."*
+
+### **2. File Manifest**
+
+A quick-glance list of all files that will be added or modified by this template.
+
+*   **New Files:**
+    *   *Example: `backend/routes/leads.js`*
+    *   *Example: `frontend/components/booking-form.html`*
+*   **Modified Files:**
+    *   *Example: `backend/server.js`*
+    *   *Example: `frontend/app.js`*
+
+### **3. Content Sections (The "Topics")**
+
+The core of the template, broken down by technology layer. Each section contains the relevant code snippets and instructions for a specific file.
+
+*   #### **Topic A: Frontend - HTML Component**
+    *   **Target File:** The HTML file for the new component.
+    *   **Content:** The semantic HTML code for the component.
+
+*   #### **Topic B: Frontend - CSS Styling**
+    *   **Target File:** The CSS file for styling the new component.
+    *   **Content:** The CSS rules to style the component.
+
+*   #### **Topic C: Frontend - JavaScript Logic**
+    *   **Target File:** The JavaScript file that will handle the component's interactivity.
+    *   **Content:** The JS code to manage events, gather data, and communicate with the backend.
+
+*   #### **Topic D: Backend - API Endpoint**
+    *   **Target File:** The new backend route file that defines the API logic.
+    *   **Content:** The server-side code to create API endpoints (e.g., GET, POST) for the feature.
+
+*   #### **Topic E: Backend - Server Integration**
+    *   **Target File:** The main server file (e.g., `server.js`).
+    *   **Content:** The specific lines needed to import and use the new route file, making the API live.
+
+*   #### **Topic F: Database (Optional)**
+    *   **Target File:** A database schema or model file.
+    *   **Content:** The code or SQL commands needed to create or alter database tables for the feature.
+
+### **4. Implementation Notes**
+
+A final section for critical reminders or dependencies needed to make the feature work.
+
+*   **Dependencies:** Lists any new `npm` packages or third-party libraries that need to be installed.
+*   **Environment Variables:** Lists any new keys that need to be added to the `.env` file.
+*   **Reminders:** Important notes, like "Ensure `cors` is enabled on the backend."
+
+---
+---
+
+//============= ::: 02 - Servers (The Ignition Key) ::: =============\\
+
+# Guide: Local Server Startup
+
+**Purpose:** A simple checklist to launch all the moving parts of a project on your local machine. Use this guide at the start of a new work session.
+
+### **1. Start the Backend Server (The Brain 🧠)**
+
+This runs the core application logic.
+
+*   **Action:**
+    1.  Open your **first terminal**.
+    2.  Navigate to your main project folder: `cd [your-project-folder]`
+    3.  Activate the Python virtual environment: `source venv/bin/activate`
+    4.  Run the Uvicorn server command:
+        ```bash
+        uvicorn backend.main:app --reload
+        ```
+*   **Result:** Look for the message `Uvicorn running on http://127.0.0.1:8000`. Leave this terminal running.
+
+### **2. Start the Frontend Environment (The UI & Styles 🎨)**
+
+This serves your user interface files and compiles your Sass styles automatically.
+
+*   **Action (The Easy Way):**
+    1.  In VS Code, make sure you have the **"Live Server"** extension installed.
+    2.  In the file explorer, **right-click your `index.html` file**.
+    3.  Select **"Open with Live Server."**
+
+*   **Result:** A new browser tab will open automatically to your project (e.g., `http://127.0.0.1:5500`). Live Server will now handle serving your files and recompiling your Sass whenever you save.
+
+### **3. Summary: Your Running Environment**
+
+Your simple and efficient setup is:
+*   **Terminal 1:** Running the **Backend Server**.
+*   **Live Server (in VS Code):** Automatically handling the **Frontend & Sass**.
+
+### **Special Case: Running a Local AI Model**
+
+If a project requires a local AI model (like Ollama), it needs to be started in its own terminal *before* you start the backend.
+*   **Action:** Open a new terminal and run `ollama serve`.
+
+---
+---
+
+//============= ::: 03 - Backend-1 (Setup) ::: =============\\
+
+# Workflow: Backend Setup
+
+**Purpose:** The focused procedure for cloning our standard starter backend and getting it running locally. This is the first step in any new build.
+
+### **1. Clone the Repository:**
+*   Open your terminal in your main projects folder.
+*   Run the command to clone our "starter" backend.
+    ```bash
+    git clone [URL_of_your_starter_backend_repo]
+    cd [backend-folder-name]
+    ```
+
+### **2. Install Dependencies:**
+*   This installs Express, CORS, and other essential packages defined in `package.json`.
+    ```bash
+    npm install
+    ```
+
+### **3. Configure Environment:**
+*   Create a `.env` file from the example template.
+    ```bash
+    cp .env.example .env
+    ```
+*   Open the new `.env` file and fill in the necessary values (like `PORT`, `DATABASE_URL`, etc.).
+
+### **4. Run & Verify the Server:**
+*   Start the backend server.
+    ```bash
+    npm run dev
+    ```
+*   **Verification:** Open a web browser and go to the health check URL (e.g., `http://localhost:3001/api/health`). You should see a success message like `{"status": "ok"}`.
+*   **Note:** Leave this server running.
+
+---
+---
+
+//============= ::: 04 - Backend-2 (Stripped) ::: =============\\
+
+# Workflow: Backend Stripping & Templating
+
+**Purpose:** A checklist to convert a project-specific backend into a generic, reusable starter template for the next build.
+
+### **✅ Checklist for Stripping the Backend**
+
+1.  **Remove Project-Specific Logic:**
+    *   [ ] Go through your `routes` folder. Delete all files related to specific features (e.g., `reservations.js`).
+    *   [ ] Leave only one simple route file (e.g., `health.js`) for testing.
+
+2.  **Clean Up the Main Server File (`server.js`):**
+    *   [ ] Remove all `require` or `import` statements for the routes you just deleted.
+    *   [ ] Ensure the file only contains essentials: Express init, core middleware, the health check route, and `app.listen`.
+
+3.  **Reset the Database Models:**
+    *   [ ] Go through your `models` or `db` folder. Delete all files defining project-specific data.
+
+4.  **Update Environment Variables:**
+    *   [ ] Open the `.env` file and remove all project-specific secret keys.
+    *   [ ] Copy the cleaned-up keys to `.env.example` with placeholder values. This is a critical step.
+
+5.  **Review `package.json`:**
+    *   [ ] Check `dependencies`. Remove any libraries that were for specific features (e.g., `stripe`). Keep only the essentials.
+
+6.  **Final Verification:**
+    *   [ ] Commit the changes. To be sure, clone the cleaned repo into a new folder and run it. If the health check passes, your starter template is perfect.
+
+---
+---
+
+//============= ::: 05 - Frontend-1 (Scaffolding) ::: =============\\
+
+# Workflow: Frontend Scaffolding
+
+**Purpose:** The standard procedure for building the visual and interactive part of an application *before* connecting it to the backend.
+
+### **Step 1: The Vision (The Input)**
+
+*   **Action:** You, Robyn, provide the creative direction.
+*   **Input:** A link to an existing website or an image/mockup of the desired layout.
+
+### **Step 2: HTML Structure (The Skeleton)**
+
+*   **Action:** I will analyze the visual input and generate the initial `index.html` file with semantic tags (`<header>`, `<main>`, etc.).
+*   **Goal:** A well-structured but unstyled document representing the page layout.
+
+### **Step 3: CSS Styling (The Skin)**
+
+*   **Action:** I will generate the initial `style.css` file to match the visual style.
+*   **Process:** I will extract colors, approximate typography, and define the layout (Flexbox/Grid) and spacing.
+*   **Goal:** A visually appealing static website that closely matches the target design.
+
+### **Step 4: Local JavaScript Interactivity (The Local Brain)**
+
+*   **Action:** I will add JavaScript for interactivity that does **not** require a backend.
+*   **Examples:** Toggling a mobile menu, opening a modal window, or a simple image slideshow.
+*   **Goal:** Make the frontend feel alive and responsive, all within the browser.
+
+---
+---
+
+//============= ::: 06 - Integration ::: =============\\
+
+# Workflow: Frontend-Backend Integration
+
+**Purpose:** The focused steps to connect the frontend to the backend, turning them into one full-stack system.
+
+**Prerequisites:** Your Backend Server is running, and your Frontend files exist.
+
+### **Step 1: The Frontend "Ask" (JavaScript `fetch`)**
+
+*   **Action:** In your frontend `app.js`, write an `async` function using `fetch` to call a backend API endpoint.
+*   **Example Code:**
+    ```javascript
+    async function getUserData() {
+      try {
+        const response = await fetch('http://localhost:3001/api/users'); 
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        console.log('Success! Data from backend:', data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    getUserData();
+    ```
+
+### **Step 2: The Backend "Answer" (The API Endpoint)**
+
+*   **Action:** In your backend code, create the endpoint that the frontend is calling.
+*   **Example Code (Node.js/Express):**
+    ```javascript
+    app.get('/api/users', (req, res) => {
+      const sampleUsers = [{ id: 1, name: 'Robyn' }, { id: 2, name: 'Koby' }];
+      res.json(sampleUsers);
+    });
+    ```
+
+### **Step 3: The "Permission" (CORS Middleware)**
+
+*   **Action:** In your main backend server file, ensure you are using the `cors` middleware **before** your routes are defined.
+*   **Example Code (Node.js/Express):**
+    ```javascript
+    const cors = require('cors');
+    const app = express();
+    app.use(cors()); // This gives permission for cross-origin requests.
+    // ... define your routes below this line ...
+    ```
+
+### **Verification**
+
+*   With both servers running, open your frontend in the browser.
+*   Open the developer console. You should see the "Success!" message and the data from the backend.

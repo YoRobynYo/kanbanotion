@@ -1,0 +1,13 @@
+/index.html
+/menu.html
+/gallery.html
+/about.html
+/testimonials.html
+/reservation.html
+/contact.html
+/blog.html
+/team.html
+/faq.html
+/styles/main.scss   -> build to styles/main.css
+/scripts/main.js
+/assets/* (none required — images are remote)
