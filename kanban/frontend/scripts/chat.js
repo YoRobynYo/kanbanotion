@@ -1,4 +1,5 @@
 // chat.js - Enhanced with draggable, resizable chat window + CODE FORMATTING
+
 document.addEventListener('DOMContentLoaded', () => {
     const chatButton = document.getElementById('chatButton');
     const chatWindow = document.getElementById('chatWindow');
@@ -13,51 +14,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetUrl = 'http://127.0.0.1:8000/api/chat/reset';
 
     // --- MARKDOWN & CODE FORMATTING FUNCTIONS ---
-    function escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, m => map[m]);
-    }
-
     function formatMessage(text) {
-    // Escape HTML first
-    text = escapeHtml(text);
-    
-    // Format code blocks - improved to preserve whitespace
-    text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
-        const language = lang || 'javascript';
-        // Decode escaped HTML entities in code and preserve formatting
-        code = code.trim();
-        return `<pre><code class="language-${language}">${code}</code></pre>`;
-    });
-    
-    // Format inline code
-    text = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
-    
-    // Format bold
-    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    
-    // Format italic
-    text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    
-    // Format line breaks AFTER code blocks
-    text = text.replace(/\n/g, '<br>');
-    
-    return text;
-}
+        // Escape HTML first
+        const escapeHtml = (str) => {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return str.replace(/[&<>"']/g, m => map[m]);
+        };
 
-    function highlightCode() {
-        // Apply syntax highlighting to all code blocks
-        document.querySelectorAll('pre code').forEach((block) => {
-            if (typeof hljs !== 'undefined') {
-                hljs.highlightElement(block);
-            }
+        text = escapeHtml(text);
+
+        // Format code blocks — process BEFORE line breaks
+        text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
+            const language = lang || 'plaintext';
+            code = code.trim();
+            return `<pre><code class="language-${language}">${code}</code></pre>`;
         });
+
+        // Format inline code
+        text = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+        // Format bold and italic
+        text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+        // ONLY NOW convert remaining newlines to <br> — outside of code blocks
+        text = text.replace(/\n/g, '<br>');
+
+        return text;
     }
 
     // --- DARK MODE TOGGLE ---
@@ -231,16 +220,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const bubble = document.createElement('div');
         bubble.className = 'message-bubble';
         
-        // Apply formatting for AI messages
         if (sender === 'ai') {
             bubble.innerHTML = formatMessage(text);
             messageContainer.appendChild(bubble);
             chatMessages.appendChild(messageContainer);
             
-            // Apply syntax highlighting after DOM insertion
-            highlightCode();
+            // Apply syntax highlighting to ALL code blocks in chat
+            if (typeof hljs !== 'undefined') {
+                document.querySelectorAll('pre code').forEach(block => {
+                    hljs.highlightElement(block);
+                });
+            }
         } else {
-            // User messages stay as plain text
             bubble.textContent = text;
             messageContainer.appendChild(bubble);
             chatMessages.appendChild(messageContainer);
@@ -264,14 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             chatWindow.classList.remove('mobile-fullscreen');
         }
-    });
-
+    })
     // Initialize
-    addMessage("Hello! How can I assist you today?", 'ai');
+    addMessage("Hey there!", 'ai');
     console.log('✅ Enhanced chat system with code formatting initialized');
 });
-
-
 
 
 // chat.js - Enhanced with draggable, resizable chat window
