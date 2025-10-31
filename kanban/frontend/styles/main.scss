@@ -117,7 +117,7 @@ body {
 }
 
 .right-column {
-  flex: 0 0 420px;
+  flex: 0 0 440px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -134,8 +134,8 @@ body {
 
 .kanban-column {
   flex: 1;
-  min-width: 120px;
-  max-width: 170px;
+  min-width: 110px;
+  max-width: 160px;
   display: flex;
   flex-direction: column;
 }
@@ -360,12 +360,12 @@ body {
   transform: rotate(180deg) scale(1.1);
 }
 
-/* Chat window - bigger and better positioned */
+/* Chat window - slightly narrower to fit better */
 .chat-window {
   position: fixed;
-  right: 10px;
+  right: 15px;
   top: 80px;
-  width: 450px;
+  width: 420px;
   height: calc(100vh - 100px);
   display: none;
   flex-direction: column;
@@ -662,3 +662,102 @@ body {
     right: 20px;
   }
 }
+
+/* ===================================
+   CODE FORMATTING IN CHAT
+=================================== */
+
+/* Inline code */
+.message-bubble code.inline-code {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: #ff6b9d;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Code block container */
+.message-bubble pre {
+  background: rgba(40, 44, 52, 0.95);
+  padding: 16px;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin: 12px 0;
+  border-left: 4px solid #667eea;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  white-space: pre-wrap;
+  /* ADD THIS - preserves line breaks and spaces */
+  word-wrap: break-word;
+  /* ADD THIS - allows long lines to wrap */
+}
+
+/* Code inside pre blocks */
+.message-bubble pre code {
+  background: none;
+  padding: 0;
+  display: block;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.88em;
+  line-height: 1.6;
+  color: #abb2bf;
+  border: none;
+  white-space: pre-wrap;
+  /* ADD THIS - critical for multiline display */
+  word-wrap: break-word;
+  /* ADD THIS */
+  overflow-wrap: break-word;
+  /* ADD THIS - for better wrapping */
+}
+
+.message-bubble strong {
+  font-weight: 700;
+  color: #61dafb;
+}
+
+.message-bubble em {
+  font-style: italic;
+  opacity: 0.95;
+}
+
+// .message-bubble code.inline-code {
+//   background: rgba(255, 255, 255, 0.15);
+//   padding: 3px 8px;
+//   border-radius: 4px;
+//   font-family: 'Courier New', 'Consolas', monospace;
+//   font-size: 0.9em;
+//   color: #ff6b9d;
+//   border: 1px solid rgba(255, 255, 255, 0.2);
+// }
+
+// .message-bubble pre {
+//   background: rgba(40, 44, 52, 0.95);
+//   padding: 16px;
+//   border-radius: 12px;
+//   overflow-x: auto;
+//   margin: 12px 0;
+//   border-left: 4px solid #667eea;
+//   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+// }
+
+// .message-bubble pre code {
+//   background: none;
+//   padding: 0;
+//   display: block;
+//   font-family: 'Courier New', 'Consolas', monospace;
+//   font-size: 0.88em;
+//   line-height: 1.6;
+//   color: #abb2bf;
+//   border: none;
+// }
+
+// .message-bubble strong {
+//   font-weight: 700;
+//   color: #61dafb;
+// }
+
+// .message-bubble em {
+//   font-style: italic;
+//   opacity: 0.95;
+// }

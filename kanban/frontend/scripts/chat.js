@@ -1,4 +1,4 @@
-// chat.js - Enhanced with draggable, resizable chat window
+// chat.js - Enhanced with draggable, resizable chat window + CODE FORMATTING
 document.addEventListener('DOMContentLoaded', () => {
     const chatButton = document.getElementById('chatButton');
     const chatWindow = document.getElementById('chatWindow');
@@ -11,6 +11,54 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const backendUrl = 'http://127.0.0.1:8000/api/chat';
     const resetUrl = 'http://127.0.0.1:8000/api/chat/reset';
+
+    // --- MARKDOWN & CODE FORMATTING FUNCTIONS ---
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function formatMessage(text) {
+    // Escape HTML first
+    text = escapeHtml(text);
+    
+    // Format code blocks - improved to preserve whitespace
+    text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
+        const language = lang || 'javascript';
+        // Decode escaped HTML entities in code and preserve formatting
+        code = code.trim();
+        return `<pre><code class="language-${language}">${code}</code></pre>`;
+    });
+    
+    // Format inline code
+    text = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+    
+    // Format bold
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    
+    // Format italic
+    text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    
+    // Format line breaks AFTER code blocks
+    text = text.replace(/\n/g, '<br>');
+    
+    return text;
+}
+
+    function highlightCode() {
+        // Apply syntax highlighting to all code blocks
+        document.querySelectorAll('pre code').forEach((block) => {
+            if (typeof hljs !== 'undefined') {
+                hljs.highlightElement(block);
+            }
+        });
+    }
 
     // --- DARK MODE TOGGLE ---
     const darkModeBtn = document.getElementById('dark-mode-toggle');
@@ -35,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatButton.addEventListener('click', () => {
         chatWindow.classList.add('active');
     });
-
+    
     chatClose.addEventListener('click', () => {
         chatWindow.classList.remove('active');
     });
@@ -46,43 +94,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentY;
     let initialX;
     let initialY;
-
+    
     chatHeader.style.cursor = 'move';
-
     chatHeader.addEventListener('mousedown', dragStart);
     document.addEventListener('mousemove', drag);
     document.addEventListener('mouseup', dragEnd);
-
+    
     function dragStart(e) {
-        // Don't drag if clicking close button
         if (e.target.closest('.chat-close')) return;
-        
         isDragging = true;
         initialX = e.clientX - chatWindow.offsetLeft;
         initialY = e.clientY - chatWindow.offsetTop;
         chatHeader.style.cursor = 'grabbing';
     }
-
+    
     function drag(e) {
         if (!isDragging) return;
-        
         e.preventDefault();
         currentX = e.clientX - initialX;
         currentY = e.clientY - initialY;
-
-        // Keep window within viewport
+        
         const maxX = window.innerWidth - chatWindow.offsetWidth;
         const maxY = window.innerHeight - chatWindow.offsetHeight;
-        
         currentX = Math.max(0, Math.min(currentX, maxX));
         currentY = Math.max(0, Math.min(currentY, maxY));
-
+        
         chatWindow.style.left = currentX + 'px';
         chatWindow.style.top = currentY + 'px';
         chatWindow.style.right = 'auto';
         chatWindow.style.bottom = 'auto';
     }
-
+    
     function dragEnd() {
         isDragging = false;
         chatHeader.style.cursor = 'move';
@@ -93,17 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
     resizeHandle.className = 'resize-handle';
     resizeHandle.innerHTML = '⋰';
     chatWindow.appendChild(resizeHandle);
-
+    
     let isResizing = false;
-    let startWidth;
-    let startHeight;
-    let startX;
-    let startY;
-
+    let startWidth, startHeight, startX, startY;
+    
     resizeHandle.addEventListener('mousedown', resizeStart);
     document.addEventListener('mousemove', resize);
     document.addEventListener('mouseup', resizeEnd);
-
+    
     function resizeStart(e) {
         isResizing = true;
         startWidth = chatWindow.offsetWidth;
@@ -112,14 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
         startY = e.clientY;
         e.preventDefault();
     }
-
+    
     function resize(e) {
         if (!isResizing) return;
-        
         const width = startWidth + (e.clientX - startX);
         const height = startHeight + (e.clientY - startY);
-
-        // Min/max constraints
+        
         if (width >= 350 && width <= 800) {
             chatWindow.style.width = width + 'px';
         }
@@ -127,18 +164,18 @@ document.addEventListener('DOMContentLoaded', () => {
             chatWindow.style.height = height + 'px';
         }
     }
-
+    
     function resizeEnd() {
         isResizing = false;
     }
 
-    // --- RESET CHAT WITH BACKEND CALL ---
+    // --- RESET CHAT ---
     resetChatBtn.addEventListener('click', async () => {
-        if (confirm("Are you sure you want to reset the chat? This will clear the conversation.")) {
+        if (confirm("Are you sure you want to reset the chat?")) {
             await resetChat();
         }
     });
-
+    
     async function resetChat() {
         try {
             const response = await fetch(resetUrl, { 
@@ -146,14 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' }
             });
             
-            if (!response.ok) {
-                throw new Error('Reset failed');
-            }
+            if (!response.ok) throw new Error('Reset failed');
             
             chatMessages.innerHTML = '';
             addMessage("Chat reset successfully. How can I assist you today?", 'ai');
             chatInput.value = '';
-            
             console.log('✅ Chat reset successful');
         } catch (error) {
             console.error('❌ Error resetting chat:', error);
@@ -164,44 +198,53 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- CHAT COMMUNICATION ---
     chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
-
+        
         addMessage(userMessage, 'user');
         chatInput.value = '';
-
+        
         try {
             const response = await fetch(backendUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: userMessage }),
             });
-
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
+            
             const data = await response.json();
             addMessage(data.reply, 'ai');
-            
         } catch (error) {
             console.error("❌ Error communicating with backend:", error);
-            addMessage("Sorry, I can't connect to the server. Please ensure the backend is running.", 'ai');
+            addMessage("Sorry, I can't connect to the server.", 'ai');
         }
     });
 
-    // --- ADD MESSAGE TO CHAT ---
+    // --- ADD MESSAGE TO CHAT (UPDATED WITH FORMATTING) ---
     function addMessage(text, sender) {
         const messageContainer = document.createElement('div');
         messageContainer.classList.add('message', sender);
-
+        
         const bubble = document.createElement('div');
         bubble.className = 'message-bubble';
-        bubble.textContent = text;
-
-        messageContainer.appendChild(bubble);
-        chatMessages.appendChild(messageContainer);
+        
+        // Apply formatting for AI messages
+        if (sender === 'ai') {
+            bubble.innerHTML = formatMessage(text);
+            messageContainer.appendChild(bubble);
+            chatMessages.appendChild(messageContainer);
+            
+            // Apply syntax highlighting after DOM insertion
+            highlightCode();
+        } else {
+            // User messages stay as plain text
+            bubble.textContent = text;
+            messageContainer.appendChild(bubble);
+            chatMessages.appendChild(messageContainer);
+        }
         
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -210,12 +253,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function isMobile() {
         return window.innerWidth <= 768;
     }
-
-    // Adjust chat window for mobile
+    
     if (isMobile()) {
         chatWindow.classList.add('mobile-fullscreen');
     }
-
+    
     window.addEventListener('resize', () => {
         if (isMobile()) {
             chatWindow.classList.add('mobile-fullscreen');
@@ -224,135 +266,181 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialize with welcome message
+    // Initialize
     addMessage("Hello! How can I assist you today?", 'ai');
-    
-    console.log('✅ Enhanced chat system initialized');
+    console.log('✅ Enhanced chat system with code formatting initialized');
 });
 
-// new colomn layout for chat.js 
-// console.log("--- CHAT SCRIPT HAS LOADED ---");
-
-// document.addEventListener('DOMContentLoaded', () => {
-//   const chatButton = document.getElementById('chatButton');
-//   const chatWindow = document.getElementById('chatWindow');
-//   const chatClose = document.getElementById('chatClose');
-//   const chatForm = document.getElementById('chatForm');
-//   const chatInput = document.getElementById('chatInput');
-//   const chatMessages = document.getElementById('chatMessages');
-//   const resetChatBtn = document.getElementById('reset-chat-btn');
-
-//   // Auto-detect backend host
-
-//   // Explicitly define the correct backend address
-//   const API_BASE_URL = 'http://127.0.0.1:8000/api';
-//   const backendUrl = `${API_BASE_URL}/chat`;
-//   const resetUrl = `${API_BASE_URL}/chat/reset`;
-
-//   chatButton.addEventListener('click', () => chatWindow.classList.add('active'));
-//   // chatClose.addEventListener('click', () => chatWindow.classList.remove('active'));
-
-//   // Replace the old line with this block:
-// chatClose.addEventListener('click', () => {
-//     console.log("--- CLOSE BUTTON WAS CLICKED! ---"); // The test message
-//     chatWindow.classList.remove('active');
-// });
-
-//   resetChatBtn.addEventListener('click', async () => {
-//     if (confirm("Reset chat history?")) await resetChat();
-//   });
-
-//   async function resetChat() {
-//     try {
-//       const response = await fetch(resetUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-//       if (!response.ok) throw new Error('Reset failed');
-//       chatMessages.innerHTML = '';
-//       addMessage("Chat reset successfully. How can I assist you today?", 'ai');
-//     } catch (error) {
-//       console.error('Error resetting chat:', error);
-//       addMessage("Failed to reset chat. Please try again.", 'ai');
-//     }
-//   }
-
-//   chatForm.addEventListener('submit', async (e) => {
-//     e.preventDefault();
-//     const userMessage = chatInput.value.trim();
-//     if (!userMessage) return;
-
-//     addMessage(userMessage, 'user');
-//     chatInput.value = '';
-
-//     try {
-//       const response = await fetch(backendUrl, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ message: userMessage }),
-//       });
-
-//       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-//       const data = await response.json();
-//       addMessage(data.reply, 'ai');
-//     } catch (error) {
-//       console.error("Error communicating with backend:", error);
-//       addMessage(`Sorry, I can't reach the server (${backendUrl}).`, 'ai');
-//     }
-//   });
-
-//   function addMessage(text, sender) {
-//     const messageContainer = document.createElement('div');
-//     messageContainer.classList.add('message', sender);
-//     const bubble = document.createElement('div');
-//     bubble.className = 'message-bubble';
-//     bubble.textContent = text;
-//     messageContainer.appendChild(bubble);
-//     chatMessages.appendChild(messageContainer);
-//     chatMessages.scrollTop = chatMessages.scrollHeight;
-//   }
-
-//   addMessage("Hello! How can I assist you today?", 'ai');
-// });
 
 
 
-// This is your working code with a single, small correction to the addMessage function to fix the bubble styling.
-// Plus: Added reset chat functionality with confirmation.
-
+// chat.js - Enhanced with draggable, resizable chat window
 // document.addEventListener('DOMContentLoaded', () => {
 //     const chatButton = document.getElementById('chatButton');
 //     const chatWindow = document.getElementById('chatWindow');
+//     const chatHeader = document.querySelector('.chat-header');
 //     const chatClose = document.getElementById('chatClose');
 //     const chatForm = document.getElementById('chatForm');
 //     const chatInput = document.getElementById('chatInput');
 //     const chatMessages = document.getElementById('chatMessages');
-//     const resetChatBtn = document.getElementById('reset-chat-btn'); // 👈 Reset button
-
+//     const resetChatBtn = document.getElementById('reset-chat-btn');
+    
 //     const backendUrl = 'http://127.0.0.1:8000/api/chat';
+//     const resetUrl = 'http://127.0.0.1:8000/api/chat/reset';
 
-//     // --- CHAT WINDOW TOGGLE LOGIC ---
+//     // --- DARK MODE TOGGLE ---
+//     const darkModeBtn = document.getElementById('dark-mode-toggle');
+//     let isDarkMode = localStorage.getItem('darkMode') === 'true';
+    
+//     function toggleDarkMode() {
+//         isDarkMode = !isDarkMode;
+//         document.body.classList.toggle('dark-mode', isDarkMode);
+//         localStorage.setItem('darkMode', isDarkMode);
+//         darkModeBtn.textContent = isDarkMode ? '☀️' : '🌙';
+//     }
+    
+//     if (darkModeBtn) {
+//         darkModeBtn.addEventListener('click', toggleDarkMode);
+//         if (isDarkMode) {
+//             document.body.classList.add('dark-mode');
+//             darkModeBtn.textContent = '☀️';
+//         }
+//     }
+
+//     // --- CHAT WINDOW TOGGLE ---
 //     chatButton.addEventListener('click', () => {
-//         chatWindow.classList.toggle('open');
+//         chatWindow.classList.add('active');
 //     });
 
 //     chatClose.addEventListener('click', () => {
-//         chatWindow.classList.remove('open');
+//         chatWindow.classList.remove('active');
 //     });
 
-//     // --- RESET CHAT WITH CONFIRMATION ---
-//     resetChatBtn.addEventListener('click', () => {
+//     // --- DRAGGABLE CHAT WINDOW ---
+//     let isDragging = false;
+//     let currentX;
+//     let currentY;
+//     let initialX;
+//     let initialY;
+
+//     chatHeader.style.cursor = 'move';
+
+//     chatHeader.addEventListener('mousedown', dragStart);
+//     document.addEventListener('mousemove', drag);
+//     document.addEventListener('mouseup', dragEnd);
+
+//     function dragStart(e) {
+//         // Don't drag if clicking close button
+//         if (e.target.closest('.chat-close')) return;
+        
+//         isDragging = true;
+//         initialX = e.clientX - chatWindow.offsetLeft;
+//         initialY = e.clientY - chatWindow.offsetTop;
+//         chatHeader.style.cursor = 'grabbing';
+//     }
+
+//     function drag(e) {
+//         if (!isDragging) return;
+        
+//         e.preventDefault();
+//         currentX = e.clientX - initialX;
+//         currentY = e.clientY - initialY;
+
+//         // Keep window within viewport
+//         const maxX = window.innerWidth - chatWindow.offsetWidth;
+//         const maxY = window.innerHeight - chatWindow.offsetHeight;
+        
+//         currentX = Math.max(0, Math.min(currentX, maxX));
+//         currentY = Math.max(0, Math.min(currentY, maxY));
+
+//         chatWindow.style.left = currentX + 'px';
+//         chatWindow.style.top = currentY + 'px';
+//         chatWindow.style.right = 'auto';
+//         chatWindow.style.bottom = 'auto';
+//     }
+
+//     function dragEnd() {
+//         isDragging = false;
+//         chatHeader.style.cursor = 'move';
+//     }
+
+//     // --- RESIZABLE CHAT WINDOW ---
+//     const resizeHandle = document.createElement('div');
+//     resizeHandle.className = 'resize-handle';
+//     resizeHandle.innerHTML = '⋰';
+//     chatWindow.appendChild(resizeHandle);
+
+//     let isResizing = false;
+//     let startWidth;
+//     let startHeight;
+//     let startX;
+//     let startY;
+
+//     resizeHandle.addEventListener('mousedown', resizeStart);
+//     document.addEventListener('mousemove', resize);
+//     document.addEventListener('mouseup', resizeEnd);
+
+//     function resizeStart(e) {
+//         isResizing = true;
+//         startWidth = chatWindow.offsetWidth;
+//         startHeight = chatWindow.offsetHeight;
+//         startX = e.clientX;
+//         startY = e.clientY;
+//         e.preventDefault();
+//     }
+
+//     function resize(e) {
+//         if (!isResizing) return;
+        
+//         const width = startWidth + (e.clientX - startX);
+//         const height = startHeight + (e.clientY - startY);
+
+//         // Min/max constraints
+//         if (width >= 350 && width <= 800) {
+//             chatWindow.style.width = width + 'px';
+//         }
+//         if (height >= 400 && height <= 800) {
+//             chatWindow.style.height = height + 'px';
+//         }
+//     }
+
+//     function resizeEnd() {
+//         isResizing = false;
+//     }
+
+//     // --- RESET CHAT WITH BACKEND CALL ---
+//     resetChatBtn.addEventListener('click', async () => {
 //         if (confirm("Are you sure you want to reset the chat? This will clear the conversation.")) {
-//             resetChat();
+//             await resetChat();
 //         }
 //     });
 
-//     function resetChat() {
-//         chatMessages.innerHTML = '';
-//         addMessage("Hello! How can I assist you today?", 'ai');
-//         chatInput.value = '';
+//     async function resetChat() {
+//         try {
+//             const response = await fetch(resetUrl, { 
+//                 method: 'POST',
+//                 headers: { 'Content-Type': 'application/json' }
+//             });
+            
+//             if (!response.ok) {
+//                 throw new Error('Reset failed');
+//             }
+            
+//             chatMessages.innerHTML = '';
+//             addMessage("Chat reset successfully. How can I assist you today?", 'ai');
+//             chatInput.value = '';
+            
+//             console.log('✅ Chat reset successful');
+//         } catch (error) {
+//             console.error('❌ Error resetting chat:', error);
+//             addMessage("Failed to reset chat. Please try again.", 'ai');
+//         }
 //     }
 
-//     // --- CHAT COMMUNICATION LOGIC ---
+//     // --- CHAT COMMUNICATION ---
 //     chatForm.addEventListener('submit', async (e) => {
 //         e.preventDefault();
+        
 //         const userMessage = chatInput.value.trim();
 //         if (!userMessage) return;
 
@@ -366,17 +454,20 @@ document.addEventListener('DOMContentLoaded', () => {
 //                 body: JSON.stringify({ message: userMessage }),
 //             });
 
-//             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+//             if (!response.ok) {
+//                 throw new Error(`HTTP error! Status: ${response.status}`);
+//             }
 
 //             const data = await response.json();
-//             addMessage(data.reply, 'ai'); 
+//             addMessage(data.reply, 'ai');
+            
 //         } catch (error) {
-//             console.error("Error communicating with backend:", error);
-//             addMessage("Sorry, I can't connect to the server. Please ensure the Python backend is running.", 'ai');
+//             console.error("❌ Error communicating with backend:", error);
+//             addMessage("Sorry, I can't connect to the server. Please ensure the backend is running.", 'ai');
 //         }
 //     });
 
-//     // --- FUNCTION TO ADD MESSAGES TO CHAT WINDOW ---
+//     // --- ADD MESSAGE TO CHAT ---
 //     function addMessage(text, sender) {
 //         const messageContainer = document.createElement('div');
 //         messageContainer.classList.add('message', sender);
@@ -387,9 +478,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //         messageContainer.appendChild(bubble);
 //         chatMessages.appendChild(messageContainer);
+        
 //         chatMessages.scrollTop = chatMessages.scrollHeight;
 //     }
 
-//     // Initialize chat
-//     resetChat();
+//     // --- MOBILE DETECTION ---
+//     function isMobile() {
+//         return window.innerWidth <= 768;
+//     }
+
+//     // Adjust chat window for mobile
+//     if (isMobile()) {
+//         chatWindow.classList.add('mobile-fullscreen');
+//     }
+
+//     window.addEventListener('resize', () => {
+//         if (isMobile()) {
+//             chatWindow.classList.add('mobile-fullscreen');
+//         } else {
+//             chatWindow.classList.remove('mobile-fullscreen');
+//         }
+//     });
+
+//     // Initialize with welcome message
+//     addMessage("Hello! How can I assist you today?", 'ai');
+    
+//     console.log('✅ Enhanced chat system initialized');
 // });

@@ -90,6 +90,7 @@ This runs the core application logic.
 
 ### **2. Start the Frontend Environment (The UI & Styles 🎨)**
 
+
 This serves your user interface files and compiles your Sass styles automatically.
 
 *   **Action (The Easy Way):**
@@ -99,8 +100,7 @@ This serves your user interface files and compiles your Sass styles automaticall
 
 *   **Result:** A new browser tab will open automatically to your project (e.g., `http://127.0.0.1:5500`). Live Server will now handle serving your files and recompiling your Sass whenever you save.
 
-### **3. Summary: Your Running Environment**
-
+### **3. Summary: Your Running Environment*
 Your simple and efficient setup is:
 *   **Terminal 1:** Running the **Backend Server**.
 *   **Live Server (in VS Code):** Automatically handling the **Frontend & Sass**.
