@@ -100,25 +100,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ✅ UPDATED: initializeDragAndDrop with ghost removal only
   function initializeDragAndDrop() {
     const tasks = document.querySelectorAll('.task');
     const taskContainers = document.querySelectorAll('.tasks');
 
     tasks.forEach(task => {
-      task.addEventListener('dragstart', () => task.classList.add('dragging'));
-      task.addEventListener('dragend', () => {
-        task.classList.remove('dragging');
-        saveData();
-      });
+      const dragStartHandler = (e) => {
+        task.classList.add('dragging');
+
+        // 👻 Hide the default drag ghost
+        const ghost = document.createElement('div');
+        ghost.style.width = '0';
+        ghost.style.height = '0';
+        ghost.style.opacity = '0';
+        ghost.style.position = 'absolute';
+        document.body.appendChild(ghost);
+        e.dataTransfer.setDragImage(ghost, 0, 0);
+
+        const dragEndHandler = () => {
+          task.classList.remove('dragging');
+  
+          // 👇 ADD THESE TWO LINES for smooth drop
+          task.classList.add('smooth-drop');
+          setTimeout(() => task.classList.remove('smooth-drop'), 300);
+  
+          if (ghost.parentNode) ghost.remove(); // clean up
+          saveData();
+        };
+
+        task.addEventListener('dragend', dragEndHandler);
+      };
+
+      // Remove any existing listener to avoid duplicates
+      task.removeEventListener('dragstart', dragStartHandler);
+      task.addEventListener('dragstart', dragStartHandler);
     });
 
     taskContainers.forEach(container => {
       container.addEventListener('dragover', e => {
         e.preventDefault();
         const draggingTask = document.querySelector('.dragging');
+        if (!draggingTask) return;
+
         const afterElement = getDragAfterElement(container, e.clientY);
-        if (!afterElement) container.appendChild(draggingTask);
-        else container.insertBefore(draggingTask, afterElement);
+        if (afterElement) {
+          container.insertBefore(draggingTask, afterElement);
+        } else {
+          container.appendChild(draggingTask);
+        }
       });
     });
   }
@@ -128,8 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return draggableElements.reduce((closest, child) => {
       const box = child.getBoundingClientRect();
       const offset = y - box.top - box.height / 2;
-      return (offset < 0 && offset > closest.offset) ?
-        { offset, element: child } : closest;
+      return (offset < 0 && offset > closest.offset)
+        ? { offset, element: child }
+        : closest;
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
@@ -143,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tasksContainer = form.previousElementSibling;
         tasksContainer.appendChild(newTask);
         input.value = '';
-        initializeDragAndDrop();
+        initializeDragAndDrop(); // Rebind for new task
         saveData();
       }
     });
@@ -151,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadData();
 });
+
 
 
 // js/main.js

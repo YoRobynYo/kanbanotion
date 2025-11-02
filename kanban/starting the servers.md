@@ -125,7 +125,7 @@ You’ll keep three terminals open.
     From the project root:
     cd /Users/robynmai/Live-Builds/restaurant-project/restaurant
     source venv/bin/activate
-    uvicorn backend.main:app --reload
+    uvicorn backend.main:app --reload 
     Keep this running. Test at: http://localhost:8000/health
 
 🌐 Terminal 3 — Frontend (static site)

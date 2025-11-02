@@ -1,4 +1,4 @@
-# backend/chat/chat_api.py || v4.5 – Blueprint, PDF & Course Auto-Integration
+# backend/chat/chat_api.py || v4.7 – Fixed Course Detection
 from fastapi import APIRouter
 from pydantic import BaseModel
 from backend.services.ai_client import get_ai_client
@@ -75,15 +75,13 @@ COURSE_FILES = load_course_files()
 try:
     with open(KANBAN_PATH, "r", encoding="utf-8") as f:
         kanbanotion_context = f.read()
-    
     resource_list = "\n\n=== AVAILABLE RESOURCES ===\n"
     if BLUEPRINT_FILES:
         resource_list += f"📘 Blueprints: {', '.join(BLUEPRINT_FILES.keys())}\n"
     if PDF_FILES:
         resource_list += f"📄 PDFs: {', '.join([v['name'] for v in PDF_FILES.values()])}\n"
     if COURSE_FILES:
-        resource_list += f"🎓 Courses: {len(COURSE_FILES)} files in total\n"
-    
+        resource_list += f"🎓 Courses: {len(COURSE_FILES)} files in total (use 'show course' to access)\n"
     kanbanotion_context += "\n" + resource_list
     print("✅ Kanban context loaded successfully.")
 except FileNotFoundError:
@@ -95,18 +93,14 @@ def extract_pdf_text(key: str, full=False):
     pdf_info = PDF_FILES.get(key)
     if not pdf_info: 
         return None
-    
     try:
         reader = PdfReader(pdf_info["path"])
         text = ""
         pages = reader.pages if full else reader.pages[:5]
-        
         for page in pages:
             text += page.extract_text() or ""
-        
         if len(text) > 3000:
             text = text[:3000] + "...\n\n[Use 'details {key}' for full content]"
-        
         return f"📄 {pdf_info['name']}\n\n{text}"
     except Exception as e:
         return f"[Error reading PDF '{key}': {str(e)}]"
@@ -115,20 +109,40 @@ def load_course_content(key: str):
     path = COURSE_FILES.get(key)
     if not path or not os.path.exists(path):
         return None
-    
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
         content = f.read()
-    
     if len(content) > 3000:
         content = content[:3000] + "\n\n[... truncated for brevity]"
-    
     return f"🎓 Course File: {os.path.basename(path)}\n\n{content}"
 
 def find_course_match(user_message: str):
+    """Only trigger course loading with EXPLICIT course-related keywords"""
     msg = user_message.lower()
+    
+    # ONLY trigger if user explicitly asks for course content
+    explicit_triggers = [
+        "show me the course",
+        "load course",
+        "javascript course",
+        "js course",
+        "course file",
+        "from the course",
+        "in the course",
+        "open course",
+        "course content",
+        "what's in the course",
+        "course material"
+    ]
+    
+    # Check for explicit triggers first - if none found, return None
+    if not any(trigger in msg for trigger in explicit_triggers):
+        return None
+    
+    # Now search for matching course files
     for key in COURSE_FILES.keys():
         if any(part in msg for part in key.lower().split('-')):
             return key
+    
     return None
 
 # --- Memory Management ---
@@ -139,13 +153,26 @@ def load_memory():
                 return json.load(f)
         except json.JSONDecodeError:
             print("⚠️ Memory corrupted, resetting.")
-    
     print("💾 Creating new memory file.")
     return [{"role": "system", "content": kanbanotion_context}]
 
 def save_memory():
     with open(MEMORY_PATH, "w", encoding="utf-8") as f:
         json.dump(conversation_history, f, indent=2, ensure_ascii=False)
+
+def get_recent_messages(max_messages=10):
+    """Keep only system message + last N user/assistant pairs to prevent context overload"""
+    if not conversation_history:
+        return [{"role": "system", "content": kanbanotion_context}]
+    
+    # Always keep the system message
+    system_msg = conversation_history[0] if conversation_history[0]["role"] == "system" else {"role": "system", "content": kanbanotion_context}
+    
+    # Get recent messages (skip system message if it exists)
+    start_idx = 1 if conversation_history[0]["role"] == "system" else 0
+    recent = conversation_history[start_idx:][-(max_messages * 2):]  # *2 for user+assistant pairs
+    
+    return [system_msg] + recent
 
 conversation_history = load_memory()
 
@@ -163,37 +190,233 @@ async def handle_chat(request: ChatRequest):
     global conversation_history
     user_message = request.message.strip()
     user_message_lower = user_message.lower()
-    
+
     # PDF detection
     if any(k in user_message_lower for k in PDF_FILES.keys()):
         pdf_key = next(k for k in PDF_FILES if k in user_message_lower)
         pdf_text = extract_pdf_text(pdf_key, full=("full" in user_message_lower or "details" in user_message_lower))
-        
         if pdf_text:
             conversation_history.append({"role": "user", "content": f"{user_message}\n\n{pdf_text}"})
-            ai_response = ai_client.chat_completion(messages=conversation_history)
+            ai_response = ai_client.chat_completion(messages=get_recent_messages())
             conversation_history.append({"role": "assistant", "content": ai_response})
             save_memory()
             return {"reply": ai_response}
-    
-    # Course detection
+
+    # Course detection - NOW MUCH MORE RESTRICTIVE
     course_key = find_course_match(user_message_lower)
     if course_key:
         course_content = load_course_content(course_key)
         if course_content:
             conversation_history.append({"role": "user", "content": f"{user_message}\n\n{course_content}"})
-            ai_response = ai_client.chat_completion(messages=conversation_history)
+            ai_response = ai_client.chat_completion(messages=get_recent_messages())
             conversation_history.append({"role": "assistant", "content": ai_response})
             save_memory()
             return {"reply": ai_response}
-    
+
     # Default chat
     conversation_history.append({"role": "user", "content": user_message})
-    ai_response = ai_client.chat_completion(messages=conversation_history)
+    ai_response = ai_client.chat_completion(messages=get_recent_messages())
     conversation_history.append({"role": "assistant", "content": ai_response})
     save_memory()
-    
     return {"reply": ai_response}
+
+
+# backend/chat/chat_api.py || v4.5 – Blueprint, PDF & Course Auto-Integration
+# from fastapi import APIRouter
+# from pydantic import BaseModel
+# from backend.services.ai_client import get_ai_client
+# import os, json, re
+# from PyPDF2 import PdfReader
+
+# router = APIRouter()
+
+# # --- SETUP ---
+# class ChatRequest(BaseModel):
+#     message: str
+
+# ai_client = get_ai_client()
+
+# # --- Paths ---
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# KANBAN_PATH = os.path.join(BASE_DIR, "kanbanotion.txt")
+# MEMORY_PATH = os.path.join(BASE_DIR, "memory.json")
+# BLUEPRINT_DIR = os.path.join(BASE_DIR, "blueprints")
+# PDF_DIR = os.path.join(BASE_DIR, "pdfs")
+# COURSE_DIR = os.path.join(BASE_DIR, "courses")
+
+# print(f"📂 BASE_DIR: {BASE_DIR}")
+# print(f"📂 MEMORY_PATH: {MEMORY_PATH}")
+# print(f"📂 BLUEPRINT_DIR: {BLUEPRINT_DIR}")
+# print(f"📂 PDF_DIR: {PDF_DIR}")
+# print(f"📂 COURSE_DIR: {COURSE_DIR}")
+
+# # Ensure directories exist
+# os.makedirs(BLUEPRINT_DIR, exist_ok=True)
+# os.makedirs(PDF_DIR, exist_ok=True)
+# os.makedirs(COURSE_DIR, exist_ok=True)
+
+# # --- Blueprint Loader ---
+# def load_blueprint_files():
+#     files = {}
+#     if os.path.exists(BLUEPRINT_DIR):
+#         for filename in os.listdir(BLUEPRINT_DIR):
+#             if filename.endswith(".txt"):
+#                 key = filename.replace(".txt", "")
+#                 files[key] = os.path.join(BLUEPRINT_DIR, filename)
+#     print(f"📘 Loaded {len(files)} blueprints: {', '.join(files.keys()) or 'none'}")
+#     return files
+
+# # --- PDF Loader ---
+# def load_pdf_files():
+#     files = {}
+#     if os.path.exists(PDF_DIR):
+#         for i, filename in enumerate(sorted(os.listdir(PDF_DIR)), 1):
+#             if filename.lower().endswith(".pdf"):
+#                 key = f"pdf-{i:02d}"
+#                 files[key] = {"path": os.path.join(PDF_DIR, filename), "name": filename}
+#     print(f"📄 Loaded {len(files)} PDFs: {', '.join(files.keys()) or 'none'}")
+#     return files
+
+# # --- Course Loader (Recursive) ---
+# def load_course_files():
+#     files = {}
+#     if os.path.exists(COURSE_DIR):
+#         for root, _, filenames in os.walk(COURSE_DIR):
+#             for filename in filenames:
+#                 if filename.endswith((".js", ".txt", ".md", ".html")):
+#                     rel_path = os.path.relpath(os.path.join(root, filename), COURSE_DIR)
+#                     key = f"course-{rel_path.replace(os.sep, '-')}"
+#                     files[key] = os.path.join(root, filename)
+#     print(f"🎓 Loaded {len(files)} course files: {', '.join(list(files.keys())[:6]) if files else 'none'}...")
+#     return files
+
+# BLUEPRINT_FILES = load_blueprint_files()
+# PDF_FILES = load_pdf_files()
+# COURSE_FILES = load_course_files()
+
+# # --- Load Context ---
+# try:
+#     with open(KANBAN_PATH, "r", encoding="utf-8") as f:
+#         kanbanotion_context = f.read()
+    
+#     resource_list = "\n\n=== AVAILABLE RESOURCES ===\n"
+#     if BLUEPRINT_FILES:
+#         resource_list += f"📘 Blueprints: {', '.join(BLUEPRINT_FILES.keys())}\n"
+#     if PDF_FILES:
+#         resource_list += f"📄 PDFs: {', '.join([v['name'] for v in PDF_FILES.values()])}\n"
+#     if COURSE_FILES:
+#         resource_list += f"🎓 Courses: {len(COURSE_FILES)} files in total\n"
+    
+#     kanbanotion_context += "\n" + resource_list
+#     print("✅ Kanban context loaded successfully.")
+# except FileNotFoundError:
+#     kanbanotion_context = "You are Koby, a development assistant for Robyn."
+#     print("❌ Kanban context missing; using fallback.")
+
+# # --- Helpers ---
+# def extract_pdf_text(key: str, full=False):
+#     pdf_info = PDF_FILES.get(key)
+#     if not pdf_info: 
+#         return None
+    
+#     try:
+#         reader = PdfReader(pdf_info["path"])
+#         text = ""
+#         pages = reader.pages if full else reader.pages[:5]
+        
+#         for page in pages:
+#             text += page.extract_text() or ""
+        
+#         if len(text) > 3000:
+#             text = text[:3000] + "...\n\n[Use 'details {key}' for full content]"
+        
+#         return f"📄 {pdf_info['name']}\n\n{text}"
+#     except Exception as e:
+#         return f"[Error reading PDF '{key}': {str(e)}]"
+
+# def load_course_content(key: str):
+#     path = COURSE_FILES.get(key)
+#     if not path or not os.path.exists(path):
+#         return None
+    
+#     with open(path, "r", encoding="utf-8", errors="ignore") as f:
+#         content = f.read()
+    
+#     if len(content) > 3000:
+#         content = content[:3000] + "\n\n[... truncated for brevity]"
+    
+#     return f"🎓 Course File: {os.path.basename(path)}\n\n{content}"
+
+# def find_course_match(user_message: str):
+#     msg = user_message.lower()
+#     for key in COURSE_FILES.keys():
+#         if any(part in msg for part in key.lower().split('-')):
+#             return key
+#     return None
+
+# # --- Memory Management ---
+# def load_memory():
+#     if os.path.exists(MEMORY_PATH):
+#         try:
+#             with open(MEMORY_PATH, "r", encoding="utf-8") as f:
+#                 return json.load(f)
+#         except json.JSONDecodeError:
+#             print("⚠️ Memory corrupted, resetting.")
+    
+#     print("💾 Creating new memory file.")
+#     return [{"role": "system", "content": kanbanotion_context}]
+
+# def save_memory():
+#     with open(MEMORY_PATH, "w", encoding="utf-8") as f:
+#         json.dump(conversation_history, f, indent=2, ensure_ascii=False)
+
+# conversation_history = load_memory()
+
+# # --- Chat Endpoints ---
+# @router.post("/chat/reset")
+# async def reset_chat():
+#     global conversation_history
+#     conversation_history = [{"role": "system", "content": kanbanotion_context}]
+#     save_memory()
+#     print("🔄 Memory reset.")
+#     return {"status": "ok", "message": "Chat memory reset."}
+
+# @router.post("/chat")
+# async def handle_chat(request: ChatRequest):
+#     global conversation_history
+#     user_message = request.message.strip()
+#     user_message_lower = user_message.lower()
+    
+#     # PDF detection
+#     if any(k in user_message_lower for k in PDF_FILES.keys()):
+#         pdf_key = next(k for k in PDF_FILES if k in user_message_lower)
+#         pdf_text = extract_pdf_text(pdf_key, full=("full" in user_message_lower or "details" in user_message_lower))
+        
+#         if pdf_text:
+#             conversation_history.append({"role": "user", "content": f"{user_message}\n\n{pdf_text}"})
+#             ai_response = ai_client.chat_completion(messages=conversation_history)
+#             conversation_history.append({"role": "assistant", "content": ai_response})
+#             save_memory()
+#             return {"reply": ai_response}
+    
+#     # Course detection
+#     course_key = find_course_match(user_message_lower)
+#     if course_key:
+#         course_content = load_course_content(course_key)
+#         if course_content:
+#             conversation_history.append({"role": "user", "content": f"{user_message}\n\n{course_content}"})
+#             ai_response = ai_client.chat_completion(messages=conversation_history)
+#             conversation_history.append({"role": "assistant", "content": ai_response})
+#             save_memory()
+#             return {"reply": ai_response}
+    
+#     # Default chat
+#     conversation_history.append({"role": "user", "content": user_message})
+#     ai_response = ai_client.chat_completion(messages=conversation_history)
+#     conversation_history.append({"role": "assistant", "content": ai_response})
+#     save_memory()
+    
+#     return {"reply": ai_response}
 
 
 

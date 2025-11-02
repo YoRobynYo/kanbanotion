@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* ===================================
    VARIABLES & FONTS
 =================================== */
@@ -174,10 +175,41 @@ body {
   margin-bottom: 12px;
   cursor: grab;
   transition: all 0.3s ease;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  /* vertically center everything */
+  text-align: center;
+  height: 100px;
+  /* 🔑 FIXED HEIGHT — all boxes identical */
+  overflow: hidden;
+  /* 🔑 hide anything that doesn't fit */
+  box-sizing: border-box;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  will-change: transform;
+}
+
+.task.dragging {
+  opacity: 0.85;
+  transform: scale(1.02);
+  z-index: 10;
+  position: relative;
+}
+
+/* Smooth drop animation */
+@keyframes smoothDrop {
+  from {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.task.smooth-drop {
+  animation: smoothDrop 0.3s ease-out forwards;
 }
 
 .task:hover {
@@ -197,10 +229,19 @@ body {
 }
 
 .task-text {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  /* For WebKit browsers (Chrome, Safari, Edge) */
+  line-clamp: 2;
+  /* Standard property (future-proof) */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  max-height: 2.6em;
+  /* Fallback for Firefox */
   margin-bottom: 6px;
   text-align: center;
-  word-break: break-word;
 }
 
 .task-actions {
@@ -454,6 +495,7 @@ body {
 .chat-title {
   font-size: 18px;
   font-weight: 700;
+  text-align: center;
   color: white;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   font-family: "Montserrat", sans-serif;
@@ -646,61 +688,88 @@ body {
     right: 20px;
   }
 }
-/* ===================================
-   CODE FORMATTING IN CHAT
-=================================== */
-/* Inline code */
-.message-bubble code.inline-code {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-family: "Courier New", "Consolas", monospace;
-  font-size: 0.9em;
-  color: #ff6b9d;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* ================================== */
+/* CHAT BUBBLE & GRADIENT FONT STYLES */
+/* ================================== */
+/* A. General container for each message (the row) */
+.message {
+  display: flex;
+  /* This enables alignment */
+  margin-bottom: 12px;
 }
 
-/* Code block container */
-.message-bubble pre {
-  background: rgba(40, 44, 52, 0.95);
-  padding: 16px;
-  border-radius: 12px;
-  overflow-x: auto;
-  margin: 12px 0;
-  border-left: 4px solid #667eea;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  white-space: pre-wrap;
-  /* ADD THIS - preserves line breaks and spaces */
-  word-wrap: break-word;
-  /* ADD THIS - allows long lines to wrap */
+/* B. Align user messages to the right */
+.message.user {
+  justify-content: flex-end;
 }
 
-/* Code inside pre blocks */
-.message-bubble pre code {
-  background: none;
-  padding: 0;
-  display: block;
-  font-family: "Courier New", "Consolas", monospace;
-  font-size: 0.88em;
+/* C. Align AI messages to the left */
+.message.ai {
+  justify-content: flex-start;
+}
+
+/* D. The chat bubble's background and shape */
+.message-bubble {
+  background-color: #374151;
+  /* Default dark background */
+  border-radius: 15px;
+  padding: 10px 15px;
+  max-width: 85%;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================= */
+/* E. The GRADIENT TEXT (Users Settings) */
+/* ============================================= */
+.message.user .message-bubble .gradient-text {
+  /* --- NEW: Solid Color Text --- */
+  color: #e0e0e0;
+  /* --- REMOVE THESE LINES --- */
+  /* -webkit-background-clip: text; */
+  /* background-clip: text; */
+  /* -webkit-text-fill-color: transparent; */
+  /* color: transparent; */
+  /* -------------------------- */
+  /* --- Font Styling: Space Grotesk --- */
+  font-family: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.3em;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  /* --- Layout --- */
   line-height: 1.6;
-  color: #abb2bf;
-  border: none;
+  margin: 0;
+}
+
+/* ============================================= */
+/* F. The AI TEXT (Using Space Grotesk) */
+/* ============================================= */
+.message.ai .message-bubble {
+  /* --- Text Styling (Applied to the bubble container) --- */
+  color: #e0e0e0;
+  /* charcoal gray */
+  font-family: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.3em;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  line-height: 1.6;
+  margin: 0;
+  /* --- Bubble Styling (Specific to AI) --- */
+  background-color: #1f2937;
+  /* A dark, distinct background for the AI bubble */
+}
+
+/* G. Styling for code blocks (applies inside AI messages) */
+.message.ai .message-bubble pre {
+  background-color: #0d1117;
+  /* Even darker background for code */
+  color: #c9d1d9;
+  font-family: "Courier New", monospace;
+  font-size: 0.88em;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 3px solid #ea5c0c;
   white-space: pre-wrap;
-  /* ADD THIS - critical for multiline display */
   word-wrap: break-word;
-  /* ADD THIS */
-  overflow-wrap: break-word;
-  /* ADD THIS - for better wrapping */
-}
-
-.message-bubble strong {
-  font-weight: 700;
-  color: #61dafb;
-}
-
-.message-bubble em {
-  font-style: italic;
-  opacity: 0.95;
 }
 
 /*# sourceMappingURL=main.css.map */
