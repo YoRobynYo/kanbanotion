@@ -11,7 +11,11 @@ app = FastAPI(title="Kanbanotion AI Assistant Backend")
 # Configure CORS to allow your frontend to connect
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "null"],
+    allow_origins=[
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",  # ADD THIS LINE
+        "null"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
