@@ -6,24 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="data:," />
   <title>Webpage Build Kanban</title>
-
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
   <!-- Font Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
   <!-- Font Montserrat -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet" />
   <!-- Font Space Grotesk -->
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
   <!-- Syntax highlighting for code blocks -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
   <link rel="stylesheet" href="styles/main.css" />
 </head>
 
@@ -31,44 +26,98 @@
   <!-- The new sidebar goes here -->
   <aside class="kanban-sidebar">
     <div class="sidebar-header">
-      <span class="project-icon">BG</span>
+      <span class="project-icon">EB</span>
       <div class="project-info">
-        <p class="project-title">Beyond Gravity</p>
+        <h2 class="project-title">Eco-Build</h2>
         <p class="project-type">Software project</p>
       </div>
     </div>
 
     <nav class="sidebar-nav">
-      <ul class="nav-section">
-        <li class="nav-item nav-dropdown">
-          <a href="#">Lunar Rover <span class="dropdown-arrow">▼</span></a>
-        </li>
-        <li class="nav-item">
-          <a href="#"><span class="nav-icon">⫴</span> Timeline</a>
-        </li>
-        <li class="nav-item active">
-          <a href="#"><span class="nav-icon">▥</span> Kanban board</a>
-        </li>
-        <li class="nav-item">
-          <a href="#"><span class="nav-icon">📈</span> Reports</a>
-        </li>
-      </ul>
+      <!-- PLANNING Section -->
+      <div class="nav-section">
+        <div class="nav-section-header" data-section="planning">
+          <span class="section-title">PLANNING</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <ul class="nav-items" id="planning-items">
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-pencil-ruler"></i> Designing The Project</a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-stream"></i> Timeline</a>
+          </li>
+          <li class="nav-item active">
+            <a href="#"><i class="fas fa-columns"></i> Kanban board</a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-chart-bar"></i> Reports</a>
+          </li>
+        </ul>
+      </div>
 
-      <ul class="nav-section">
-        <li class="nav-item-title">DEVELOPMENT</li>
-        <li class="nav-item">
-          <a href="#"><span class="nav-icon"></span> Code</a>
-        </li>
-        <li class="nav-item">
-          <a href="#"><span class="nav-icon">🔒</span> Security</a>
-        </li>
-        <li class="nav-item">
-          <a href="#"><span class="nav-icon">📦</span> Releases</a>
-        </li>
-      </ul>
+      <!-- DEVELOPMENT Section -->
+      <div class="nav-section">
+        <div class="nav-section-header" data-section="development">
+          <span class="section-title">DEVELOPMENT</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <ul class="nav-items" id="development-items">
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-exclamation-circle"></i> Issues</a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-puzzle-piece"></i> Components</a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-code"></i> Code</a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-shield-alt"></i> Security</a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-rocket"></i> Releases</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- OPERATIONS Section -->
+      <div class="nav-section">
+        <div class="nav-section-header" data-section="operations">
+          <span class="section-title">OPERATIONS</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <ul class="nav-items" id="operations-items">
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-cloud-upload-alt"></i> Deployments</a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-fire"></i> Incidents <span class="badge">BETA</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-phone"></i> On-call</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- PAGES Section -->
+      <div class="nav-section">
+        <div class="nav-section-header" data-section="pages">
+          <span class="section-title">PAGES</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <ul class="nav-items" id="pages-items">
+          <li class="nav-item">
+            <a href="#"><i class="fas fa-plus"></i> Add shortcut</a>
+          </li>
+        </ul>
+      </div>
     </nav>
-  </aside>
 
+
+
+    <p class="company-note">Your company-managed project</p>
+  </aside>
   <!-- TOP BUTTONS — NOW MOVED OUTSIDE main-content-wrapper -->
   <div class="top-buttons">
     <button id="dark-mode-toggle" title="Toggle Dark Mode">🌙</button>
@@ -77,163 +126,114 @@
     </button>
     <button id="reset-chat-btn" class="reset-button" title="Reset Chat">🔄</button>
   </div>
-
   <!-- Wrapper for the rest of the content to make room for the sidebar -->
   <div class="main-content-wrapper">
     <div class="page-container">
-      <!-- LEFT COLUMN (Kanban Board) -->
+      <!-- LEFT COLUMN (This section is unchanged and correct) -->
       <div class="left-column">
         <div class="kanban-board">
           <!-- Project Backlog -->
-          <div class="kanban-column" id="backlog" role="region" aria-label="Project Backlog column">
+          <div class="kanban-column" id="backlog">
             <h2 class="column-title">Project Backlog</h2>
             <div class="tasks">
-              <div class="task" draggable="true">
-                <span class="task-text">Design database schema</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Design database schema</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
-              <div class="task" draggable="true">
-                <span class="task-text">Set up Python backend server</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Set up Python backend server</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
-              <div class="task" draggable="true">
-                <span class="task-text">Create user authentication API</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Create user authentication API</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
-              <div class="task" draggable="true">
-                <span class="task-text">Build the chat widget UI</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Build the chat widget UI</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
-              <div class="task" draggable="true">
-                <span class="task-text">Style board with custom theme</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Style board with custom theme</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
-              <div class="task" draggable="true">
-                <span class="task-text">Set up deployment pipeline</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Set up deployment pipeline</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
             </div>
-            <form class="add-task-form">
-              <input type="text" placeholder="+ Add a task" required />
-              <button type="submit">Add</button>
-            </form>
+            <form class="add-task-form"><input type="text" placeholder="+ Add a task" required /><button
+                type="submit">Add</button></form>
           </div>
-
           <!-- Not Started -->
-          <div class="kanban-column" id="not-started" role="region" aria-label="Not Started column">
+          <div class="kanban-column" id="not-started">
             <h2 class="column-title">Not Started</h2>
             <div class="tasks">
-              <div class="task" draggable="true">
-                <span class="task-text">Build the hero section</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Build the hero section</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
-              <div class="task" draggable="true">
-                <span class="task-text">Create the contact form</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Create the contact form</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
-              <div class="task" draggable="true">
-                <span class="task-text">Design the footer</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Design the footer</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
             </div>
-            <form class="add-task-form">
-              <input type="text" placeholder="+ Add a task" required />
-              <button type="submit">Add</button>
-            </form>
+            <!-- Add the form to set the task -->
+            <form class="add-task-form"><input type="text" placeholder="+ Add a task" required /><button
+                type="submit">Add</button></form>
           </div>
-
           <!-- In Progress -->
-          <div class="kanban-column" id="in-progress" role="region" aria-label="In Progress column">
+          <div class="kanban-column" id="in-progress">
             <h2 class="column-title">In Progress</h2>
             <div class="tasks">
-              <div class="task" draggable="true">
-                <span class="task-text">Develop the main navigation</span>
-                <div class="task-actions">
-                  <i class="fas fa-pen" aria-label="Edit task"></i>
-                  <i class="fas fa-trash" aria-label="Delete task"></i>
-                </div>
+              <div class="task" draggable="true"><span class="task-text">Develop the main navigation</span>
+                <div class="task-actions"><i class="fas fa-pen"></i><i class="fas fa-trash"></i></div>
               </div>
             </div>
-            <form class="add-task-form">
-              <input type="text" placeholder="+ Add a task" required />
-              <button type="submit">Add</button>
-            </form>
+            <form class="add-task-form"><input type="text" placeholder="+ Add a task" required /><button
+                type="submit">Add</button></form>
           </div>
-
           <!-- Completed -->
-          <div class="kanban-column" id="completed" role="region" aria-label="Completed column">
+          <div class="kanban-column" id="completed">
             <h2 class="column-title">Completed</h2>
             <div class="tasks"></div>
-            <form class="add-task-form">
-              <input type="text" placeholder="+ Add a task" required />
-              <button type="submit">Add</button>
-            </form>
+            <form class="add-task-form"><input type="text" placeholder="+ Add a task" required /><button
+                type="submit">Add</button></form>
           </div>
-
           <!-- On Hold -->
-          <div class="kanban-column" id="on-hold" role="region" aria-label="On Hold column">
+          <div class="kanban-column" id="on-hold">
             <h2 class="column-title">On Hold</h2>
             <div class="tasks"></div>
-            <form class="add-task-form">
-              <input type="text" placeholder="+ Add a task" required />
-              <button type="submit">Add</button>
-            </form>
+            <form class="add-task-form"><input type="text" placeholder="+ Add a task" required /><button
+                type="submit">Add</button></form>
           </div>
         </div>
       </div>
-
-      <!-- RIGHT COLUMN — CHAT WIDGET (UNCHANGED) -->
+      <!-- RIGHT COLUMN (This is the fully corrected section) -->
       <div class="right-column">
         <div class="chat-widget">
+          <!-- The Main Chat Window (This is what gets shown/hidden) -->
           <div class="chat-window" id="chatWindow">
+            <!-- FIX #1: THE HEADER (Close icon is now correctly placed) -->
             <div class="chat-header">
               <h3 class="chat-title">K123 AI Systems</h3>
               <div class="chat-close" id="chatClose" title="Close Chat">
                 <i class="fas fa-times"></i>
               </div>
             </div>
+            <!-- FIX #2: THE MESSAGES (Now correctly placed INSIDE the window) -->
             <div class="chat-messages" id="chatMessages"></div>
+            <!-- FIX #3: THE INPUT (Now correctly placed INSIDE the window) -->
             <div class="chat-input-container">
               <form class="chat-input-wrapper" id="chatForm">
                 <input type="text" class="chat-input" id="chatInput" placeholder="Ask your AI assistant..." required />
                 <button type="submit" class="send-button" id="chatSend">Send</button>
               </form>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+          </div> <!-- End of .chat-window -->
+        </div> <!-- End of .chat-widget -->
+      </div> <!-- End of .right-column -->
+    </div> <!-- End of .page-container -->
+  </div> <!-- End of .main-content-wrapper -->
 
   <script src="scripts/main.js"></script>
   <script src="scripts/chat.js"></script>
+  <script src="scripts/sidebar.js"></script>
+
 </body>
 
 </html>
