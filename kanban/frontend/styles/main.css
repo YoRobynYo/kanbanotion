@@ -111,7 +111,7 @@ body {
 }
 
 /* ===================================
-   TWO-COLUMN LAYOUT
+   SINGLE-COLUMN LAYOUT
 =================================== */
 .page-container {
   display: flex;
@@ -122,16 +122,25 @@ body {
 }
 
 .left-column {
-  flex: 1;
+  flex: 1 1 0%;
+  /* 👈 Key change: don't grow beyond content */
   display: flex;
   overflow-x: auto;
+  padding-bottom: 10px;
+  min-width: 0;
+  /* 👈 Critical for flex children */
 }
 
-.right-column {
-  flex: 0 0 440px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
+.left-column {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+}
+
+.left-column::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
 }
 
 /* ===================================
@@ -140,17 +149,25 @@ body {
 .kanban-board {
   display: flex;
   width: 100%;
-  gap: 8px;
+  gap: 6px;
 }
 
 .kanban-column {
   flex: 1;
-  min-width: 160px;
-  max-width: 200px;
+  /* Equal width for all columns */
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  /* Prevents overflow */
 }
 
+/* Ensure columns don't get too narrow on small screens */
+@media (max-width: 1200px) {
+  .kanban-column {
+    min-width: 180px;
+    /* Adjust as needed */
+  }
+}
 .column-title {
   margin-top: 0;
   font-size: 1em;
@@ -297,12 +314,28 @@ body {
 }
 
 /* ===================================
+   TASKS CONTAINER (Drop Zones)
+=================================== */
+.tasks {
+  flex-grow: 1;
+  min-height: 80px;
+  /* 👈 Critical for empty columns */
+  overflow-y: auto;
+  padding: 5px;
+}
+
+/* ===================================
+   ADD TASK FORM
+=================================== */
+/* ===================================
    ADD TASK FORM
 =================================== */
 .add-task-form {
   display: flex;
   gap: var(--gap-sm);
   margin-top: 10px;
+  padding: 0 4px;
+  /* 👈 Add small padding to prevent overflow */
 }
 
 .add-task-form input {
@@ -310,47 +343,66 @@ body {
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 8px 10px;
+  /* 👈 Reduced padding */
   font-family: var(--font-montserrat);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  /* 👈 Slightly smaller font */
   font-weight: 600;
   color: #fff;
+  min-width: 0;
+  /* 👈 Critical: prevents overflow */
 }
 
 .add-task-form input::placeholder {
   color: rgba(255, 255, 255, 0.7);
-}
-
-.add-task-form input:focus {
-  outline: none;
-  border-color: var(--color-border-hover);
-  box-shadow: 0 0 0 3px rgba(70, 104, 220, 0.25);
-  background: var(--color-card-bg-hover);
+  font-size: 0.85rem;
+  /* 👈 Match input font */
 }
 
 .add-task-form button {
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   font-family: var(--font-montserrat);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  /* 👈 Smaller font */
   font-weight: 700;
   color: #fff;
   border-radius: var(--radius-md);
   cursor: pointer;
-  padding: 10px 15px;
-  transition: all 0.3s ease;
-}
-
-.add-task-form button:hover {
-  background: var(--color-card-bg-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
-  border-color: var(--color-border-hover);
+  padding: 8px 10px;
+  /* 👈 Reduced padding */
+  min-width: 60px;
+  /* 👈 Ensures button is visible */
+  white-space: nowrap;
+  /* 👈 Prevents text wrapping */
 }
 
 /* ===================================
    KANBAN SIDEBAR MENU
 =================================== */
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: #888;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: auto;
+  /* Push to right */
+}
+.sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
 .kanban-sidebar {
   width: 250px;
   background: #0f0f0f;
@@ -401,15 +453,10 @@ body {
 }
 .kanban-sidebar .sidebar-nav .nav-section .nav-section-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 8px 0;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.2s ease;
-}
-.kanban-sidebar .sidebar-nav .nav-section .nav-section-header:hover {
-  opacity: 0.8;
+  margin-bottom: 12px;
 }
 .kanban-sidebar .sidebar-nav .nav-section .nav-section-header .section-title {
   font-size: 0.75em;
@@ -420,24 +467,12 @@ body {
   letter-spacing: 0.5px;
 }
 .kanban-sidebar .sidebar-nav .nav-section .nav-section-header i {
-  color: #666;
-  font-size: 0.8em;
-  transition: transform 0.3s ease;
-}
-.kanban-sidebar .sidebar-nav .nav-section .nav-section-header.collapsed i {
-  transform: rotate(-90deg);
+  display: none;
 }
 .kanban-sidebar .sidebar-nav .nav-section .nav-items {
   list-style: none;
   padding: 0;
-  margin: 8px 0 0 0;
-  overflow: hidden;
-  max-height: 500px;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
-}
-.kanban-sidebar .sidebar-nav .nav-section .nav-items.collapsed {
-  max-height: 0;
-  opacity: 0;
+  margin: 0;
 }
 .kanban-sidebar .sidebar-nav .nav-section .nav-items .nav-item {
   margin-bottom: 4px;
@@ -489,6 +524,110 @@ body {
   font-size: 0.8em;
   position: absolute;
   bottom: 20px;
+}
+
+/* ===================================
+   TWO-COLUMN SIDEBAR LAYOUT (Icons + Text)
+=================================== */
+.kanban-sidebar {
+  display: flex;
+  flex-direction: column;
+  /* Style menu items with icon + text columns */
+}
+.kanban-sidebar .nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+}
+.kanban-sidebar .nav-item a .menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  min-width: 24px;
+  font-size: 1.1em;
+  color: #888;
+}
+.kanban-sidebar .nav-item a .menu-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.kanban-sidebar .nav-item a .badge {
+  margin-left: auto;
+}
+.kanban-sidebar {
+  /* Active state */
+}
+.kanban-sidebar .nav-item.active a {
+  background: rgba(30, 144, 255, 0.15);
+  color: #1e90ff;
+}
+.kanban-sidebar .nav-item.active a .menu-icon {
+  color: #1e90ff;
+}
+.kanban-sidebar {
+  /* Hover state */
+}
+.kanban-sidebar .nav-item a:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+.kanban-sidebar .nav-item a:hover .menu-icon {
+  color: #fff;
+}
+
+/* ===================================
+   COLLAPSED SIDEBAR (Icons Only)
+=================================== */
+.kanban-sidebar.collapsed {
+  width: 70px;
+  padding: 20px 10px;
+}
+.kanban-sidebar.collapsed .project-info,
+.kanban-sidebar.collapsed .section-title,
+.kanban-sidebar.collapsed .company-note {
+  display: none !important;
+}
+.kanban-sidebar.collapsed .sidebar-header {
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.kanban-sidebar.collapsed .project-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  font-size: 1.2em;
+}
+.kanban-sidebar.collapsed .nav-section-header {
+  display: none;
+}
+.kanban-sidebar.collapsed .nav-item a {
+  justify-content: center;
+  padding: 12px 0;
+  gap: 0;
+}
+.kanban-sidebar.collapsed .nav-item a span,
+.kanban-sidebar.collapsed .nav-item a .menu-text {
+  display: none;
+}
+.kanban-sidebar.collapsed .nav-item a i {
+  width: auto;
+  font-size: 1.3em;
+  margin: 0;
+}
+.kanban-sidebar.collapsed .badge {
+  display: none !important;
+}
+
+/* Adjust main content when sidebar collapses */
+body.sidebar-collapsed .main-content-wrapper {
+  margin-left: 70px;
 }
 
 /* ===================================
@@ -821,31 +960,10 @@ body {
 /* ===================================
     RESPONSIVE
  =================================== */
-@media (max-width: 1200px) {
-  .right-column {
-    flex: 0 0 400px;
-  }
-}
-@media (max-width: 1024px) {
-  .right-column {
-    flex: 0 0 350px;
-  }
-  .kanban-board {
-    flex-wrap: wrap;
-  }
-  .kanban-column {
-    min-width: 45%;
-  }
-}
 @media (max-width: 768px) {
   .page-container {
     flex-direction: column;
     height: auto;
-  }
-  .right-column {
-    flex: none;
-    width: 100%;
-    height: 600px;
   }
   .kanban-column {
     min-width: 100%;
@@ -941,6 +1059,329 @@ body {
   border-left: 3px solid #ea5c0c;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+/* ===================================
+   KAN8 CODE ARCHITECTURE CANVAS
+=================================== */
+/* View Container System */
+.view-container {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.view-container.active {
+  display: block;
+}
+
+/* Kan8 Main Container */
+.kan8-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #0a0a14;
+  position: relative;
+}
+
+/* Toolbar */
+.kan8-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(20, 25, 40, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.kan8-title {
+  color: #fff;
+  font-family: var(--font-montserrat);
+  font-weight: 700;
+  font-size: 1.3em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kan8-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.kan8-btn {
+  background: rgba(44, 62, 80, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: var(--font-montserrat);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kan8-btn:hover {
+  background: rgba(44, 62, 80, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.kan8-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.kan8-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+#kan8-zoom-level {
+  color: #fff;
+  font-family: var(--font-montserrat);
+  font-weight: 600;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Canvas */
+.kan8-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.kan8-canvas-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Grid Background */
+.kan8-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* Connections SVG */
+.kan8-connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Cards Container */
+.kan8-cards {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* Kan8 Card */
+.kan8-card {
+  position: absolute;
+  width: 220px;
+  background: rgba(30, 35, 50, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.kan8-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.kan8-card:active {
+  cursor: grabbing;
+}
+
+.kan8-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(25, 30, 45, 0.7);
+  border-radius: 12px 12px 0 0;
+}
+
+.kan8-card-icon {
+  font-size: 1.2em;
+  width: 24px;
+  text-align: center;
+}
+
+.kan8-card-title {
+  color: #fff;
+  font-family: var(--font-montserrat);
+  font-weight: 700;
+  font-size: 1em;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kan8-card-body {
+  padding: 14px 16px;
+}
+
+.kan8-card-tech {
+  display: inline-block;
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  font-size: 0.75em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-family: var(--font-montserrat);
+  font-weight: 600;
+}
+
+.kan8-card-desc {
+  color: #ccc;
+  font-size: 0.85em;
+  line-height: 1.4;
+  margin: 0;
+  font-family: var(--font-montserrat);
+}
+
+.kan8-card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.kan8-card-actions i {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kan8-card-actions i:hover {
+  color: #fff;
+  transform: scale(1.2);
+}
+
+.kan8-card-actions .fa-pen {
+  color: #46a0ff;
+}
+
+.kan8-card-actions .fa-trash {
+  color: #ff6868;
+}
+
+.kan8-card-actions .fa-link {
+  color: #667eea;
+}
+
+/* Connection Points */
+.kan8-connection-point {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #667eea;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.kan8-card:hover .kan8-connection-point {
+  opacity: 1;
+}
+
+.kan8-connection-point.top {
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.kan8-connection-point.right {
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+}
+
+.kan8-connection-point.bottom {
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.kan8-connection-point.left {
+  top: 50%;
+  left: -6px;
+  transform: translateY(-50%);
+}
+
+/* Minimap */
+.kan8-minimap {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 160px;
+  height: 100px;
+  background: rgba(20, 25, 40, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.kan8-minimap-viewport {
+  position: absolute;
+  border: 2px solid #667eea;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kan8-card {
+    width: 180px;
+  }
+  .kan8-toolbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .kan8-controls {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /*# sourceMappingURL=main.css.map */
