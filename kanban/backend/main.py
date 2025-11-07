@@ -35,4 +35,5 @@ def health_check():
 # This part allows the server to be run directly
 if __name__ == "__main__":
     print("🚀 Starting Kanbanotion AI Assistant server at http://127.0.0.1:8000")
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000) 
+    
