@@ -115,10 +115,10 @@ body {
 =================================== */
 .page-container {
   display: flex;
-  gap: 15px;
+  gap: 0px;
   width: 100%;
   height: 100vh;
-  padding: 10px;
+  padding: 0px;
 }
 
 .left-column {
@@ -324,9 +324,6 @@ body {
   padding: 5px;
 }
 
-/* ===================================
-   ADD TASK FORM
-=================================== */
 /* ===================================
    ADD TASK FORM
 =================================== */
@@ -1070,7 +1067,6 @@ body.sidebar-collapsed .main-content-wrapper {
   width: 100%;
   height: 100%;
 }
-
 .view-container.active {
   display: block;
 }
@@ -1085,11 +1081,13 @@ body.sidebar-collapsed .main-content-wrapper {
   position: relative;
 }
 
-/* Toolbar */
+/* ===================================
+   TOOLBAR
+=================================== */
 .kan8-toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 20px;
   padding: 16px 20px;
   background: rgba(20, 25, 40, 0.7);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1106,43 +1104,51 @@ body.sidebar-collapsed .main-content-wrapper {
   align-items: center;
   gap: 10px;
 }
+.kan8-title i {
+  color: #667eea;
+}
 
 .kan8-controls {
   display: flex;
-  gap: 8px;
-  align-items: center;
+  gap: 12px;
 }
 
+/* ===================================
+   BUTTONS
+=================================== */
 .kan8-btn {
   background: rgba(44, 62, 80, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 8px 16px;
   cursor: pointer;
   font-family: var(--font-montserrat);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.2s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
-
 .kan8-btn:hover {
   background: rgba(44, 62, 80, 0.95);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.kan8-btn:active {
+  transform: translateY(0);
 }
 
 .kan8-btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
+  color: white;
 }
-
 .kan8-btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 #kan8-zoom-level {
@@ -1151,19 +1157,56 @@ body.sidebar-collapsed .main-content-wrapper {
   font-weight: 600;
   min-width: 50px;
   text-align: center;
+  user-select: none;
 }
 
-/* Canvas */
+/* ===================================
+   CANVAS
+=================================== */
 .kan8-canvas {
   flex: 1;
   position: relative;
   overflow: hidden;
+  background: #0a0a14;
+}
+.kan8-canvas.connecting-mode {
+  cursor: crosshair;
+}
+.kan8-canvas.connecting-mode::after {
+  content: "🔗 Click a connection point to complete (ESC to cancel)";
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(102, 126, 234, 0.95);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: var(--font-montserrat);
+  font-size: 0.9em;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  animation: slideDown 0.3s ease;
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
 .kan8-canvas-inner {
   width: 100%;
   height: 100%;
   position: relative;
+  transform-origin: 0 0;
+  transition: transform 0.1s ease-out;
 }
 
 /* Grid Background */
@@ -1176,9 +1219,12 @@ body.sidebar-collapsed .main-content-wrapper {
   background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 20px 20px;
   pointer-events: none;
+  opacity: 0.5;
 }
 
-/* Connections SVG */
+/* ===================================
+   CONNECTIONS SVG LAYER
+=================================== */
 .kan8-connections {
   position: absolute;
   top: 0;
@@ -1187,6 +1233,9 @@ body.sidebar-collapsed .main-content-wrapper {
   height: 100%;
   pointer-events: none;
   z-index: 1;
+}
+.kan8-connections path {
+  pointer-events: stroke;
 }
 
 /* Cards Container */
@@ -1199,11 +1248,13 @@ body.sidebar-collapsed .main-content-wrapper {
   z-index: 2;
 }
 
-/* Kan8 Card */
+/* ===================================
+   KAN8 CARDS
+=================================== */
 .kan8-card {
   position: absolute;
   width: 220px;
-  background: rgba(30, 35, 50, 0.9);
+  background: rgba(30, 35, 50, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
@@ -1211,15 +1262,31 @@ body.sidebar-collapsed .main-content-wrapper {
   transition: all 0.2s ease;
   user-select: none;
 }
-
 .kan8-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.25);
 }
-
 .kan8-card:active {
   cursor: grabbing;
+}
+.kan8-card.connecting-from {
+  border-color: #46a0ff !important;
+  box-shadow: 0 0 20px rgba(70, 160, 255, 0.6) !important;
+  transform: translateY(-3px);
+}
+.kan8-card.has-connections::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  background: #667eea;
+  border: 2px solid #0a0a14;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(102, 126, 234, 0.8);
+  z-index: 10;
 }
 
 .kan8-card-header {
@@ -1236,6 +1303,7 @@ body.sidebar-collapsed .main-content-wrapper {
   font-size: 1.2em;
   width: 24px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .kan8-card-title {
@@ -1280,95 +1348,145 @@ body.sidebar-collapsed .main-content-wrapper {
   padding: 12px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .kan8-card-actions i {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.9em;
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 .kan8-card-actions i:hover {
   color: #fff;
   transform: scale(1.2);
 }
-
-.kan8-card-actions .fa-pen {
+.kan8-card-actions i.fa-pen {
   color: #46a0ff;
 }
-
-.kan8-card-actions .fa-trash {
+.kan8-card-actions i.fa-trash {
   color: #ff6868;
 }
-
-.kan8-card-actions .fa-link {
+.kan8-card-actions i.fa-link {
   color: #667eea;
 }
 
-/* Connection Points */
+/* ===================================
+   CONNECTION POINTS
+=================================== */
 .kan8-connection-point {
   position: absolute;
-  width: 12px;
-  height: 12px;
-  background: #667eea;
-  border: 2px solid #fff;
+  width: 14px;
+  height: 14px;
+  background: #2d3748;
+  border: 2px solid #667eea;
   border-radius: 50%;
-  cursor: pointer;
-  z-index: 3;
+  cursor: crosshair;
+  z-index: 10;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
 }
-
+.kan8-connection-point.top {
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.kan8-connection-point.right {
+  top: 50%;
+  right: -7px;
+  transform: translateY(-50%);
+}
+.kan8-connection-point.bottom {
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.kan8-connection-point.left {
+  top: 50%;
+  left: -7px;
+  transform: translateY(-50%);
+}
 .kan8-card:hover .kan8-connection-point {
   opacity: 1;
 }
-
-.kan8-connection-point.top {
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
+.kan8-connection-point:hover {
+  background: #667eea !important;
+  border-color: #46a0ff !important;
+  transform: scale(1.5);
+  box-shadow: 0 0 12px rgba(102, 126, 234, 0.8);
+}
+.kan8-connection-point.active {
+  opacity: 1 !important;
+  background: #46a0ff !important;
+  border-color: #fff !important;
+  transform: scale(1.6);
+  box-shadow: 0 0 16px rgb(70, 160, 255);
+  animation: pulsePoint 1s ease-in-out infinite;
 }
 
-.kan8-connection-point.right {
-  top: 50%;
-  right: -6px;
-  transform: translateY(-50%);
+@keyframes pulsePoint {
+  0%, 100% {
+    box-shadow: 0 0 16px rgb(70, 160, 255);
+  }
+  50% {
+    box-shadow: 0 0 24px rgb(70, 160, 255);
+    transform: scale(1.7);
+  }
+}
+/* ===================================
+   CONNECTION LINES & ARROWS
+=================================== */
+.temp-connection-line {
+  stroke: #4299e1 !important;
+  stroke-width: 2.5 !important;
+  stroke-dasharray: 8, 5 !important;
+  stroke-linecap: round !important;
+  fill: none !important;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 6px rgba(66, 153, 225, 0.4));
+  animation: dashFlow 1.2s linear infinite;
 }
 
-.kan8-connection-point.bottom {
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
+@keyframes dashFlow {
+  to {
+    stroke-dashoffset: -13;
+  }
+}
+#arrowhead polygon {
+  fill: #4299e1;
+  transition: fill 0.3s ease;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
-.kan8-connection-point.left {
-  top: 50%;
-  left: -6px;
-  transform: translateY(-50%);
+.kan8-connections path:hover ~ defs #arrowhead polygon {
+  fill: #f56565 !important;
 }
 
-/* Minimap */
+/* ===================================
+   MINIMAP
+=================================== */
 .kan8-minimap {
   position: absolute;
   bottom: 20px;
   right: 20px;
   width: 160px;
   height: 100px;
-  background: rgba(20, 25, 40, 0.8);
+  background: rgba(20, 25, 40, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   overflow: hidden;
   z-index: 5;
+  backdrop-filter: blur(10px);
 }
 
 .kan8-minimap-viewport {
   position: absolute;
   border: 2px solid #667eea;
   border-radius: 2px;
+  background: rgba(102, 126, 234, 0.1);
   pointer-events: none;
 }
 
-/* Responsive */
+/* ===================================
+   RESPONSIVE
+=================================== */
 @media (max-width: 768px) {
   .kan8-card {
     width: 180px;
@@ -1381,6 +1499,22 @@ body.sidebar-collapsed .main-content-wrapper {
   .kan8-controls {
     width: 100%;
     justify-content: center;
+    margin-left: 0;
+  }
+  .kan8-connections path {
+    stroke-width: 2;
+  }
+  .kan8-connections path:hover {
+    stroke-width: 3;
+  }
+  .temp-connection-line {
+    stroke-width: 2 !important;
+  }
+  .kan8-minimap {
+    bottom: 10px;
+    right: 10px;
+    width: 120px;
+    height: 75px;
   }
 }
 

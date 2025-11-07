@@ -86,25 +86,32 @@
               <span>Components</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="#" data-view="code">
-              <i class="fas fa-code"></i>
-              <span>Code</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#">
-              <i class="fas fa-shield-alt"></i>
-              <span>Security</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#">
-              <i class="fas fa-rocket"></i>
-              <span>Releases</span>
-            </a>
-          </li>
-        </ul>
+          <ul class="nav-items">
+            <li class="nav-item">
+              <a href="#" data-view="fundamentals">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Fundamentals</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" data-view="code">
+                <i class="fas fa-code"></i>
+                <span>Code</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#">
+                <i class="fas fa-shield-alt"></i>
+                <span>Security</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#">
+                <i class="fas fa-rocket"></i>
+                <span>Releases</span>
+              </a>
+            </li>
+          </ul>
       </div>
       <!-- OPERATIONS Section -->
       <div class="nav-section">
@@ -133,6 +140,7 @@
           </li>
         </ul>
       </div>
+
       <!-- PAGES Section -->
       <div class="nav-section">
         <div class="nav-section-header">
@@ -247,6 +255,7 @@
             <h2 class="kan8-title">
               <i class="fas fa-project-diagram"></i> Code Architecture - Kan8
             </h2>
+
             <div class="kan8-controls">
               <button id="kan8-add-card" class="kan8-btn-primary">
                 <i class="fas fa-plus"></i> Add Card
@@ -257,11 +266,7 @@
             <div class="kan8-canvas-inner">
               <div class="kan8-grid"></div>
               <svg class="kan8-connections" id="kan8Connections">
-                <defs>
-                  <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                    <polygon points="0 0, 10 3, 0 6" fill="#667eea" />
-                  </marker>
-                </defs>
+                <!-- No defs, no markers - clean SVG -->
               </svg>
               <div class="kan8-cards" id="kan8Cards">
                 <!-- Cards will be added dynamically -->

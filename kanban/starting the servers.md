@@ -13,7 +13,8 @@ This terminal runs the local AI model that powers Koby's "brain." It must be sta
 1.  **Open your first terminal window.**
 2.  Run the following command to start the Ollama server. If the application is already running in the background (llama icon in your menu bar), quit it first.
     ```
-    ollama serve
+    ollama serve / if still running use killall ollama 
+    then start the server / ollama serve
     ```
 3.  You will see log messages as the server starts. **Leave this terminal running.**
 
